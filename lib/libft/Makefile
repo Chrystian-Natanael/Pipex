@@ -120,11 +120,17 @@ $(PATHOBJ)/%.o: $(PATHSRC_LIB)/%.c
 	@$(eval COUNT_LIB=$(shell expr $(COUNT_LIB) + 1))
 	@$(CC) $(CFLAGS) -I$(PATCHINLCUDE) -c $< -o $@
 	@printf "Compiling $(YELLOW)LIBFT %d%%\r$(FCOLOR)" $$(echo $$(($(COUNT_LIB) * 100 / $(words $(SRCS_LIB)))))
+	@if [ $(COUNT_LIB) -eq $(words $(SRCS_LIB)) ]; then \
+		printf "\n"; \
+	fi
 
 $(PATHOBJ)/%.o: $(PATHSRC_GNL)/%.c 
 	@$(eval COUNT_GNL=$(shell expr $(COUNT_GNL) + 1))
 	@$(CC) $(CFLAGS) -I$(PATCHINLCUDE) -c $< -o $@
 	@printf "Compiling $(YELLOW)GNL %d%%\r$(FCOLOR)" $$(echo $$(($(COUNT_GNL) * 100 / $(words $(SRCS_GNL)))))
+	@if [ $(COUNT_GNL) -eq $(words $(SRCS_GNL)) ]; then \
+		printf "\n"; \
+	fi
 
 $(PATHOBJ)/%.o: $(PATHSRC_PRINTF)/%.c 
 	@$(eval COUNT_PRINTF=$(shell expr $(COUNT_PRINTF) + 1))
@@ -137,10 +143,8 @@ $(NAME): $(OBJS_LIB) $(OBJS_GNL) $(OBJS_PRINTF)
 
 clean:
 	@$(RM) $(PATHOBJ)
-	@printf "$(RED)CLEANED FILES:$(FCOLOR)$(PURPLE) .o$(FCOLOR)\n"
 
 fclean:	clean
 	@$(RM) $(NAME)
-	@printf "$(RED)CLEANED LIB:$(FCOLOR)$(PURPLE) $(NAME)$(FCOLOR)\n"
 
 re:	fclean all

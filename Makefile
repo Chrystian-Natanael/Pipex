@@ -71,7 +71,10 @@ define comp_objs
 	$(eval COUNT=$(shell expr $(COUNT) + 1))
 	$(COMP_OBJ)
 	$(SLEEP)
-	printf "GENERIC MESSAGE$(YELLOW) %d%%\r$(FCOLOR)" $$(echo $$(($(COUNT) * 100 / $(words $(SRCS)))))
+	printf "Compiling$(YELLOW) PIPEX %d%%\r$(FCOLOR)" $$(echo $$(($(COUNT) * 100 / $(words $(SRCS)))))
+	@if [ $(COUNT) -eq $(words $(SRCS)) ]; then \
+		printf "\n"; \
+	fi
 endef
 
 define comp_libft
@@ -81,8 +84,7 @@ endef
 
 define comp_exe
 	$(COMP_EXE)
-	printf "\n"
-	printf "$(GREEN)PROGRAM ->$(RESET)$(PURPLE) READY\n$(RESET)"
+	printf "$(GREEN)PIPEX ->$(RESET)$(PURPLE) READY\n$(RESET)"
 endef
 
 #! ******************************************************************************#
@@ -100,6 +102,8 @@ $(NAME): $(OBJS)
 
 $(LIBFT):
 	$(call comp_libft)
+	printf "\n"
+	printf "$(YELLOW)Building Pipex files\n$(RESET)"
 
 clean:
 	$(RM) $(BUILD_DIR)
