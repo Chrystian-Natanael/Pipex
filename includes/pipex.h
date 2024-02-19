@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 12:29:13 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/02/07 12:32:13 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/02/16 15:12:18 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,34 @@
 /* wait, waitpid */
 # include <sys/wait.h>
 
-#endif
+/*Enum*/
+
+typedef enum e_file_type
+{
+	IN,
+	OUT,
+	ERROR,
+}	t_file_type;
+
+typedef enum e_exit_type
+{
+	SUCCESS,
+	FAILURE,
+}	t_exit_type;
+
+/*Structs*/
+
+typedef struct s_pipex
+{
+	int pid[2];
+	int	fd[2];
+	int	fd_in;
+	int	fd_out;
+	char	**cmd1;
+	char	**cmd2;
+}	t_pipex;
+
+/*Functions*/
+int	full_error(char *str1, char *str2, char *str3, unsigned int retrn);
+
+# endif
