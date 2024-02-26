@@ -6,41 +6,41 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 12:29:13 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/02/16 15:12:18 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/02/26 16:56:37 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
 
-/* libft*/
+// ! libft functions
 # include "libft.h"
 
-/* both to open */
+// ! both to open
 # include <sys/stat.h>
 # include <fcntl.h>
 
-/* close, read, write, access, dup, dup2, execve, fork, pipe, unlink */
+// ! close, read, write, access, dup, dup2, execve, fork, pipe, unlink
 # include <unistd.h>
 
-/* malloc and free, exit */
+// ! malloc and free, exit
 # include <stdlib.h>
 
-/* type libs */
+// ! type libs
 # include <stddef.h>
 # include <sys/types.h>
 
-/* perror */
+// ! perror
 # include <stdio.h>
 # include <errno.h>
 
-/* strerror */
+// ! strerror
 # include <string.h>
 
-/* wait, waitpid */
+// ! wait, waitpid
 # include <sys/wait.h>
 
-/*Enum*/
+// ! Enum
 
 typedef enum e_file_type
 {
@@ -55,7 +55,7 @@ typedef enum e_exit_type
 	FAILURE,
 }	t_exit_type;
 
-/*Structs*/
+// ! Structs
 
 typedef struct s_pipex
 {
@@ -67,7 +67,12 @@ typedef struct s_pipex
 	char	**cmd2;
 }	t_pipex;
 
-/*Functions*/
-int	full_error(char *str1, char *str2, char *str3, unsigned int retrn);
+// ! Functions
+
+int		full_error(char *str1, char *str2, char *str3, unsigned int retrn);
+int		parent_process(int *fd, char **argv, char **envp);
+int		child_process(int *fd, char **argv, char **envp);
+int		execute_command(char *command, char **envp);
+char	*get_path_cmd(char *cmd, char **envp);
 
 # endif
