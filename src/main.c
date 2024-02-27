@@ -6,77 +6,38 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 12:32:26 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/02/26 17:34:13 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/02/27 10:40:13 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int	full_error(char *str1, char *str2, char *str3, unsigned int retrn)
-{
-	ft_putstr_fd("Pipex: ", ERROR);
-	ft_putstr_fd(str1, ERROR);
-	ft_putstr_fd(str2, ERROR);
-	ft_putstr_fd(str3, ERROR);
-	ft_putstr_fd("\n", ERROR);
-	exit (retrn);
-}
-
-char	*get_path_cmd(char *cmd, char **envp)
-{
-	char	*part_path;
-	char	**paths;
-	char	*path;
-	int		i;
-
-	i = 0;
-	while (ft_strnstr(envp[i], "PATH", 4) == 0)
-		i++;
-	paths = ft_split(envp[i] + 5, ':');
-	i = 0;
-	while (paths[i])
-	{
-		part_path = ft_strjoin(paths[i], "/");
-		path = ft_strjoin(part_path, cmd);
-		free(part_path);
-		if (access(path, F_OK) == 0)
-			return (path);
-		free(path);
-		i++;
-	}
-	i = -1;
-	while (paths[++i])
-		free(paths[i]);
-	free(paths);
-	return (0);
-}
-
 int	execute_command(char *command, char **envp)
 {
-	int		idx;
 	char	**cmd;
 	char	*path_cmd;
 
-	idx = -1;
 	cmd = ft_split(command, ' ');
 	if (cmd == NULL)
-		full_error("Split error\n", "", "", 1);
+		return (full_error("Split error\n", "", "", 1));
 	path_cmd = get_path_cmd(cmd[0], envp);
-	// if (path_cmd == NULL)
-	// {
-	// 	while (cmd[++idx])
-	// 		free(cmd[idx]);
-	// 	free(cmd);
-	// 	full_error("Command not found: ", cmd[0], "", 1);
-	// }
 	if (execve(path_cmd, cmd, envp) == -1)
 	{
-		// ft_free_all
 		if (access(path_cmd, F_OK) != 0)
-			full_error("command not found: ", *cmd, "", 127);
+		{
+			ft_putstr_fd("Pipex: Command not found: ", ERROR);
+			ft_putendl_fd(cmd[0], ERROR);
+			free_split(cmd);
+			return (127);
+		}
 		else if (access(path_cmd, X_OK) != 0)
-			full_error("Permission denied ", "", "", 126);
+		{
+			free_split(cmd);
+			free(path_cmd);
+			return (full_error("Permission denied", "", "", 126));
+		}
 	}
+	free_split(cmd);
 	return (1);
 }
 
@@ -106,7 +67,7 @@ int	parent_process(int *fd, char **argv, char **envp)
 	return (execute_command(argv[3], envp));
 }
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	pid_t	pid[2];
 	int		fd[2];
@@ -117,7 +78,7 @@ int main(int argc, char **argv, char **envp)
 		pipe(fd);
 		pid[0] = fork();
 		if (pid[0] == -1)
-			full_error("Fork error\n", "", "", 1);
+			return (full_error("Fork error\n", "", "", 1));
 		if (pid[0] == 0)
 			return (child_process(fd, argv, envp));
 		pid[1] = fork();
@@ -130,7 +91,7 @@ int main(int argc, char **argv, char **envp)
 		return ((status >> 8) & 0xFF);
 	}
 	else
-		full_error("Invalid number of arguments\n", "Try use: ", \
-		"./pipex <file1> <cmd1> <cmd2> <file2>\n", 1);	
+		return (full_error("Invalid number of arguments\n", "Try use: ", \
+			"./pipex <file1> <cmd1> <cmd2> <file2>\n", 1));
 	return (1);
 }

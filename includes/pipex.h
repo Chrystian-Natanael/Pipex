@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 12:29:13 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/02/26 16:56:37 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/02/27 10:39:38 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,10 @@ typedef enum e_exit_type
 
 typedef struct s_pipex
 {
-	int pid[2];
-	int	fd[2];
-	int	fd_in;
-	int	fd_out;
+	int		pid[2];
+	int		fd[2];
+	int		fd_in;
+	int		fd_out;
 	char	**cmd1;
 	char	**cmd2;
 }	t_pipex;
@@ -74,5 +74,6 @@ int		parent_process(int *fd, char **argv, char **envp);
 int		child_process(int *fd, char **argv, char **envp);
 int		execute_command(char *command, char **envp);
 char	*get_path_cmd(char *cmd, char **envp);
+void	free_split(char **split);
 
-# endif
+#	endif

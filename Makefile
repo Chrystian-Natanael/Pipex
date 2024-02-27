@@ -32,7 +32,8 @@ LIBFT_DIR := ./lib/libft/
 #! ******************************************************************************#
 
 SRCS =	$(addprefix $(SRCS_PATH),\
-		main.c)
+		main.c \
+		utils.c)
 LIBFT = $(addprefix $(LIBFT_DIR), libft.a)
 LIBS := $(LIBFT_DIR)libft.a
 OBJS = $(SRCS:%.c=$(BUILD_DIR)%.o)
