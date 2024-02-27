@@ -1,6 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/02/27 13:41:35 by cnatanae          #+#    #+#             */
+/*   Updated: 2024/02/27 13:43:42 by cnatanae         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
@@ -10,8 +22,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
+#ifndef PIPEX_BONUS_H
+# define PIPEX_BONUS_H
 
 // ! libft functions
 # include "libft.h"
@@ -65,61 +77,5 @@ typedef enum e_exit_type
 	SUCCESS,
 	FAILURE,
 }	t_exit_type;
-
-/* 
- * @brief Print error message and return a value
- * @details Function to concatenate error message and return a value
- * @param str1: first part of the error message
- * @param str2: second part of the error message
- * @param str3: third part of the error message
- * @param retrn: value to return
- * @return retrn
- */
-int		full_error(char *str1, char *str2, char *str3, unsigned int retrn);
-
-/*
- * @brief Fork with process the parent process
- * @details Function to fork and process the parent process
- * @param fd: file descriptor
- * @param argv: arguments
- * @param envp: environment variables
- * @return 0 if success, non 0 if failure
-*/
-int		parent_process(int *fd, char **argv, char **envp);
-
-/*
- * @brief Fork with process the child process
- * @details Function to fork and process the child process
- * @param fd: file descriptor
- * @param argv: arguments
- * @param envp: environment variables
- * @return 0 if success, non 0 if failure
-*/
-int		child_process(int *fd, char **argv, char **envp);
-
-/*
- * @brief Execute a command
- * @details Function to execute a command in the shell
- * @param command: command to execute
- * @param envp: environment variables
- * @return 0 if success, non 0 if failure
-*/
-int		execute_command(char *command, char **envp);
-
-/*
- * @brief Get the path of a command
- * @details Function to get the path of a command and validade if it exists
- * @param cmd: command
- * @param envp: environment variables
- * @return path of the command
-*/
-char	*get_path_cmd(char *cmd, char **envp);
-
-/*
- * @brief Free a split
- * @details Function to free a split of strings
- * @param split: split to free
-*/
-void	free_split(char **split);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 12:32:26 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/02/27 10:40:13 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/02/27 15:49:31 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,16 @@ int	child_process(int *fd, char **argv, char **envp)
 	int	file_in;
 
 	file_in = open(argv[1], O_RDONLY, 0777);
-	if (file_in == -1)
-		full_error("File error: ", argv[1], "", 1);
+	if (file_in == -1 || access(argv[1], F_OK) != 0)
+	{
+		close(fd[0]);
+		close(fd[1]);
+		return (full_error("File error: ", argv[1], "", 1));
+	}
 	dup2(file_in, STDIN_FILENO);
 	dup2(fd[1], STDOUT_FILENO);
 	close(fd[0]);
+	close(fd[1]);
 	return (execute_command(argv[2], envp));
 }
 
@@ -60,9 +65,14 @@ int	parent_process(int *fd, char **argv, char **envp)
 
 	file_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (file_out == -1)
-		full_error("File error: ", argv[4], "", 1);
+	{
+		close(fd[0]);
+		close(fd[1]);
+		return (full_error("File error: ", argv[4], "", 1));
+	}
 	dup2(fd[0], STDIN_FILENO);
 	dup2(file_out, STDOUT_FILENO);
+	close(fd[0]);
 	close(fd[1]);
 	return (execute_command(argv[3], envp));
 }
