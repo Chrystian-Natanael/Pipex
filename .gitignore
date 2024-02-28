@@ -1,2 +1,4 @@
 sem_permissao
 infile
+./build/
+./lib/lbft/Makefile

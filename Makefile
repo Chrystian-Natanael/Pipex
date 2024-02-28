@@ -3,9 +3,9 @@
 #! ******************************************************************************#
 
 NAME = pipex
+NAME_BONUS = pipex_bonus
 .DEFAULT_GOAL := all
-.PHONY: all clean fclean re
-.SILENT:
+.PHONY: all clean fclean re bonus
 
 #! ******************************************************************************#
 #                                   COLORS                                       #
@@ -34,10 +34,25 @@ LIBFT_DIR := ./lib/libft/
 SRCS =	$(addprefix $(SRCS_PATH),\
 		main.c \
 		utils.c)
+
+SRCS_BONUS =	$(addprefix $(SRCS_PATH),\
+				main_bonus.c \
+				utils_bonus.c)
+
 LIBFT = $(addprefix $(LIBFT_DIR), libft.a)
 LIBS := $(LIBFT_DIR)libft.a
 OBJS = $(SRCS:%.c=$(BUILD_DIR)%.o)
+OBJS_BONUS = $(SRCS_BONUS:%.c=$(BUILD_DIR)%.o)
 DEPS = $(OBJS:.o=.d)
+
+#! ******************************************************************************#
+#                                   DEFINE                                       #
+#! ******************************************************************************#
+
+ifdef WITH_BONUS
+	OBJS := $(OBJS_BONUS)
+	NAME := $(NAME_BONUS)
+endif
 
 #! ******************************************************************************#
 #                                    COMMANDS                                    #
@@ -66,6 +81,10 @@ COMP_EXE = $(CC) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $(NAME)
 
 define create_dir
 	$(MKDIR) $(dir $@)
+endef
+
+define bonus
+	$(MAKE) WITH_BONUS=TRUE
 endef
 
 define comp_objs
@@ -112,7 +131,11 @@ clean:
 
 fclean: clean
 	$(RM) $(NAME)
+	$(RM) $(NAME_BONUS)
 	$(MAKE) -C $(LIBFT_DIR) fclean
+
+bonus:
+	$(call bonus)
 
 re: fclean all
 

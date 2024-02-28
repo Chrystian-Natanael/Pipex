@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex_bonus.c                                      :+:      :+:    :+:   */
+/*   pipex_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 13:41:35 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/02/27 13:43:42 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/02/28 19:07:22 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,5 +77,14 @@ typedef enum e_exit_type
 	SUCCESS,
 	FAILURE,
 }	t_exit_type;
+
+int		full_error(char *str1, char *str2, char *str3, unsigned int retrn);
+void	usage_error(void);
+char	*find_path(char *cmd, char **envp);
+void	execute(char *argv, char **envp);
+void	child_process(char *argv, char **envp);
+int		open_file(char *argv, int i);
+void	here_doc(char *limiter, int argc);
+int		mini_gnl(char **line);
 
 #endif
