@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 12:32:26 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/02/27 15:49:31 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/02/29 11:14:32 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ int	child_process(int *fd, char **argv, char **envp)
 	dup2(fd[1], STDOUT_FILENO);
 	close(fd[0]);
 	close(fd[1]);
+	close(file_in);
 	return (execute_command(argv[2], envp));
 }
 
@@ -74,6 +75,7 @@ int	parent_process(int *fd, char **argv, char **envp)
 	dup2(file_out, STDOUT_FILENO);
 	close(fd[0]);
 	close(fd[1]);
+	close(file_out);
 	return (execute_command(argv[3], envp));
 }
 

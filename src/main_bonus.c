@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 13:40:41 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/02/28 19:07:41 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/02/29 11:05:01 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,16 @@ void	child_process(char *argv, char **envp)
 		full_error("Fork error: ", strerror(errno), "", 1);
 	if (pid == 0)
 	{
-		close(fd[0]);
 		dup2(fd[1], STDOUT_FILENO);
+		close(fd[0]);
+		close(fd[1]);
 		execute(argv, envp);
 	}
 	else
 	{
-		close(fd[1]);
 		dup2(fd[0], STDIN_FILENO);
+		close(fd[1]);
+		close(fd[0]);
 		waitpid(pid, NULL, 0);
 	}
 }
@@ -116,7 +118,7 @@ int  main(int argc, char **argv, char **envp)
 		while (i < argc - 2)
 			child_process(argv[i++], envp);
 		dup2(fileout, STDOUT_FILENO);
-		execute(argv[argc - 2], envp);
+		execute(argv[argc - 2], envp);	
 	}
 	usage_error();
 }

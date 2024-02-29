@@ -6,6 +6,7 @@ NAME = pipex
 NAME_BONUS = pipex_bonus
 .DEFAULT_GOAL := all
 .PHONY: all clean fclean re bonus
+.SILENT:
 
 #! ******************************************************************************#
 #                                   COLORS                                       #
