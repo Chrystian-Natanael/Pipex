@@ -4,6 +4,7 @@
 		"stddef.h": "c",
 		"libft.h": "c",
 		"pipex_bonus.h": "c",
-		"pipex.h": "c"
+		"pipex.h": "c",
+		"pipex_bonus": "c"
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 13:41:35 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/03/01 18:56:00 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/03/01 19:52:04 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,23 @@ typedef struct s_pipex
 	int			command_iter;
 	int			return_code;
 	int			*pid;
+	int			argc;
 }	t_pipex;
 
 
-char	**get_split(char *str);
+char	**split_path(char *str);
 void	close_pipe(int *fd_pipe);
-void	cpy_pipe(int **pipe_in, int *pipe_out);
+void	cpy_pipe(void *pipe_in, void *pipe_out);
 void	free_split(char **split);
+void	close_wait_free(t_pipex *pipex);
+void	exec_first(t_pipex *pipex, char *cmd);
+int		exec_child(t_pipex pipex, char *cmd, int type);
+void	exec_last(t_pipex *pipex, char *cmd);
+void	exec_mid(t_pipex *pipex, char *cmd);
+char	*join_paths(char *absolute, char *relative);
+int		exec_process(t_command command, t_path path);
+t_path	get_path_variables(char **envp);
+char	*get_from_path(char *cmd, t_path path);
+char	*get_absolute_path(char *cmd, t_path path);
 
 #endif

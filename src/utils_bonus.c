@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 18:28:13 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/03/01 18:58:17 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/03/01 20:27:21 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	close_pipe(int *fd_pipe)
 	close(fd_pipe[1]);
 }
 
-char	**get_split(char *str)
+char	**split_path(char *str)
 {
 	char	*start;
 	char	**split;
@@ -28,10 +28,9 @@ char	**get_split(char *str)
 	return (split);
 }
 
-void	cpy_pipe(int *pipe_in[2], int *pipe_out)
+void	cpy_pipe(void *pipe_in, void *pipe_out)
 {
-	*(pipe_in[0]) = pipe_out[0];
-	*(pipe_in[1]) = pipe_out[1];
+	ft_memcpy(pipe_in, pipe_out, sizeof(int) * 2);
 }
 
 void	free_split(char **split)
@@ -39,7 +38,26 @@ void	free_split(char **split)
 	int	i;
 
 	i = -1;
-	while (split[++i])
+	while (split && split[++i])
 		free(split[i]);
 	free(split);
+}
+
+void	close_wait_free(t_pipex *pipex)
+{
+	close_pipe(pipex->command.fd_pipe_in);
+	if (pipex->command.fd_file_in != -1)
+		close(pipex->command.fd_file_in);
+	if (pipex->command.fd_file_out != -1)
+		close(pipex->command.fd_file_out);
+	pipex->command_iter = 0;
+	while (pipex->command_iter < (pipex->argc - 3))
+	{
+		waitpid(pipex->pid[pipex->command_iter], &pipex->return_code, 0);
+		pipex->command_iter++;
+	}
+	free(pipex->pid);
+	free(pipex->path.home);
+	free(pipex->path.pwd);
+	free_split(pipex->path.path);
 }

@@ -38,6 +38,8 @@ SRCS =	$(addprefix $(SRCS_PATH),\
 
 SRCS_BONUS =	$(addprefix $(SRCS_PATH),\
 				main_bonus.c \
+				exec_bonus.c \
+				path_bonus.c \
 				utils_bonus.c)
 
 LIBFT = $(addprefix $(LIBFT_DIR), libft.a)
@@ -128,16 +130,17 @@ $(LIBFT):
 
 clean:
 	$(RM) $(BUILD_DIR)
-	$(MAKE) -C $(LIBFT_DIR) clean
+	# $(MAKE) -C $(LIBFT_DIR) clean
 
 fclean: clean
 	$(RM) $(NAME)
-	$(RM) $(NAME_BONUS)
-	$(MAKE) -C $(LIBFT_DIR) fclean
+	# $(RM) $(NAME_BONUS)
+	# $(MAKE) -C $(LIBFT_DIR) fclean
 
 bonus:
 	$(call bonus)
 
 re: fclean all
+reb: fclean bonus
 
 -include $(DEPS)
