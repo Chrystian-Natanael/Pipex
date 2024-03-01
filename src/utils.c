@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 10:34:24 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/02/27 10:39:50 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/02/29 13:50:54 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,5 +57,5 @@ char	*get_path_cmd(char *cmd, char **envp)
 		i++;
 	}
 	free_split(paths);
-	return (cmd);
+	return (ft_strdup(cmd));
 }

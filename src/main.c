@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 12:32:26 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/02/29 11:14:32 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/03/01 14:26:14 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,29 +16,28 @@ int	execute_command(char *command, char **envp)
 {
 	char	**cmd;
 	char	*path_cmd;
+	int		ret_code;
 
+	ret_code = 0;
 	cmd = ft_split(command, ' ');
 	if (cmd == NULL)
 		return (full_error("Split error\n", "", "", 1));
 	path_cmd = get_path_cmd(cmd[0], envp);
-	if (execve(path_cmd, cmd, envp) == -1)
+	execve(path_cmd, cmd, envp);
+	if (access(path_cmd, F_OK) != 0)
 	{
-		if (access(path_cmd, F_OK) != 0)
-		{
-			ft_putstr_fd("Pipex: Command not found: ", ERROR);
-			ft_putendl_fd(cmd[0], ERROR);
-			free_split(cmd);
-			return (127);
-		}
-		else if (access(path_cmd, X_OK) != 0)
-		{
-			free_split(cmd);
-			free(path_cmd);
-			return (full_error("Permission denied", "", "", 126));
-		}
+		ft_putstr_fd("Pipex: Command not found: ", ERROR);
+		ft_putendl_fd(cmd[0], ERROR);
+		ret_code = 127;
 	}
+	else if (access(path_cmd, X_OK) != 0)
+		ret_code = full_error("Permission denied: ", "", "", 126);
+	free(path_cmd);
 	free_split(cmd);
-	return (1);
+	close(0);
+	close(1);
+	close(2);
+	return (ret_code);
 }
 
 int	child_process(int *fd, char **argv, char **envp)

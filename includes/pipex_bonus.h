@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 13:41:35 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/02/29 10:53:14 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/03/01 18:56:00 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,39 +40,50 @@
 // ! wait, waitpid
 # include <sys/wait.h>
 
-/*
- * @brief Enum for file type
- * @details Enum for utility functions where the file type is important
- * @param IN: input file
- * @param OUT: output file
- * @param ERROR: error file
-*/
-typedef enum e_file_type
+enum e_process
 {
-	IN,
-	OUT,
-	ERROR,
-}	t_file_type;
+	FIRST = 0,
+	MID,
+	LAST
+};
 
-/*
- * @brief Enum for exit type
- * @details Enum for utility functions where the type exit is important
- * @param SUCCESS: success
- * @param FAILURE: failure
-*/
-typedef enum e_exit_type
+enum e_fd
 {
-	SUCCESS,
-	FAILURE,
-}	t_exit_type;
+	READ = 0,
+	WRITE
+};
 
-int		full_error(char *str1, char *str2, char *str3, unsigned int retrn);
-void	usage_error(void);
-char	*find_path(char *cmd, char **envp);
-void	execute(char *argv, char **envp);
-void	child_process(char *argv, char **envp);
-int		open_file(char *argv, int i);
-void	here_doc(char *limiter, int argc);
-int		mini_gnl(char **line);
+typedef struct s_command
+{
+	int		type;
+	int		fd_pipe_in[2];
+	int		fd_pipe_out[2];
+	int		fd_file_in;
+	int		fd_file_out;
+	char	*command;
+	char	**envp;
+}			t_command;
+
+typedef struct s_path
+{
+	char	*home;
+	char	*pwd;
+	char	**path;
+}			t_path;
+
+typedef struct s_pipex
+{
+	t_command	command;
+	t_path		path;
+	int			command_iter;
+	int			return_code;
+	int			*pid;
+}	t_pipex;
+
+
+char	**get_split(char *str);
+void	close_pipe(int *fd_pipe);
+void	cpy_pipe(int **pipe_in, int *pipe_out);
+void	free_split(char **split);
 
 #endif

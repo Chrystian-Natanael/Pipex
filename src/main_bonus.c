@@ -5,120 +5,257 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/27 13:40:41 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/02/29 11:05:01 by cnatanae         ###   ########.fr       */
+/*   Created: 2024/02/19 12:56:26 by danbarbo          #+#    #+#             */
+/*   Updated: 2024/03/01 18:59:05 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-void	child_process(char *argv, char **envp)
+char	*join_paths(char *absolute, char *relative)
 {
-	pid_t	pid;
-	int		fd[2];
+	char	total_size;
+	int		absolute_size;
+	char	*str;
 
-	if (pipe(fd) == -1)
-		full_error("Pipe error: ", strerror(errno), "", 1);
-	pid = fork();
-	if (pid == -1)
-		full_error("Fork error: ", strerror(errno), "", 1);
-	if (pid == 0)
-	{
-		dup2(fd[1], STDOUT_FILENO);
-		close(fd[0]);
-		close(fd[1]);
-		execute(argv, envp);
-	}
-	else
-	{
-		dup2(fd[0], STDIN_FILENO);
-		close(fd[1]);
-		close(fd[0]);
-		waitpid(pid, NULL, 0);
-	}
+	absolute_size = ft_strlen(absolute);
+	if (absolute[absolute_size - 1] == '/')
+		absolute_size--;
+	if (relative[0] == '/')
+		relative++;
+	total_size = absolute_size + ft_strlen(relative) + 2;
+	str = malloc(total_size);
+	ft_strlcpy(str, absolute, total_size);
+	str[absolute_size] = '/';
+	str[absolute_size + 1] = '\0';
+	ft_strlcat(str, relative, total_size);
+	return (str);
 }
 
-void	here_doc(char *limiter, int argc)
+t_path	get_path_variables(char **envp)
 {
-	pid_t	reader;
-	int		fd[2];
-	char	*line;
-
-	if (argc < 6)
-		usage_error();
-	if (pipe(fd) == -1)
-		full_error("Pipe error: ", strerror(errno), "", 1);
-	reader = fork();
-	if (reader == 0)
-	{
-		close(fd[0]);
-		while (mini_gnl(&line))
-		{
-			if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0)
-				exit(EXIT_SUCCESS);
-			write(fd[1], line, ft_strlen(line));
-		}
-	}
-	else
-	{
-		close(fd[1]);
-		dup2(fd[0], STDIN_FILENO);
-		wait(NULL);
-	}
-}
-
-int	mini_gnl(char **line)
-{
-	char	*buffer;
 	int		i;
-	int		r;
-	char	c;
+	t_path	path;
 
 	i = 0;
-	r = 0;
-	buffer = (char *)malloc(10000);
-	if (!buffer)
-		return (-1);
-	r = read(0, &c, 1);
-	while (r && c != '\n' && c != '\0')
+	while (envp[i])
 	{
-		if (c != '\n' && c != '\0')
-			buffer[i] = c;
+		if (ft_strncmp(envp[i], "PATH", 4) == 0)
+			path.path = get_split(envp[i]);
+		else if (ft_strncmp(envp[i], "PWD", 3) == 0)
+			path.pwd = ft_strdup(ft_strchr(envp[i], '=') + 1);
+		else if (ft_strncmp(envp[i], "HOME", 3) == 0)
+			path.home = ft_strdup(ft_strchr(envp[i], '=') + 1);
 		i++;
-		r = read(0, &c, 1);
 	}
-	buffer[i] = '\n';
-	buffer[++i] = '\0';
-	*line = buffer;
-	free(buffer);
-	return (r);
+	return (path);
 }
 
-int  main(int argc, char **argv, char **envp)
+char	*get_command_from_path(char *cmd, t_path path)
 {
-	int	i;
-	int	filein;
-	int	fileout;
+	char	*new_command;
 
-	if (argc >= 5)
+	new_command = NULL;
+	if (ft_strchr(cmd, '/') == NULL && cmd[0] != '~')
 	{
-		if (ft_strncmp(argv[1], "here_doc", 8) == 0)
+		for (int i = 0; path.path[i]; i++)
 		{
-			i = 3;
-			fileout = open_file(argv[argc - 1], 0);
-			here_doc(argv[2], argc);
+			new_command = join_paths(path.path[i], cmd);
+			if (access(new_command, F_OK | X_OK) == 0)
+				break ;
+			free(new_command);
+			new_command = NULL;
 		}
-		else
-		{
-			i = 2;
-			fileout = open_file(argv[argc - 1], 1);
-			filein = open_file(argv[1], 2);
-			dup2(filein, STDIN_FILENO);
-		}
-		while (i < argc - 2)
-			child_process(argv[i++], envp);
-		dup2(fileout, STDOUT_FILENO);
-		execute(argv[argc - 2], envp);	
 	}
-	usage_error();
+	else
+	{
+		if (cmd[0] == '/')
+			new_command = ft_strdup(cmd);
+		else if (cmd[0] == '~')
+		{
+			if (cmd[1] == '/')
+				new_command = join_paths(path.home, cmd + 2);
+			else
+				new_command = join_paths(path.home, cmd + 1);
+		}
+		else if (ft_strncmp(cmd, "./", 2) == 0)
+			new_command = join_paths(path.pwd, cmd + 2);
+		else
+			new_command = join_paths(path.pwd, cmd);
+	}
+	return (new_command);
+}
+
+int	exec_proc(t_command command, t_path path)
+{
+	int		return_code;
+	char	*command_absolute;
+	char	**command_split;
+
+	command_split = ft_split(command.command, ' ');
+	command_absolute = get_command_from_path(command_split[0], path);
+
+	if (command.type == FIRST)
+	{
+		dup2(command.fd_file_in, STDIN_FILENO);
+		dup2(command.fd_pipe_out[WRITE], STDOUT_FILENO);
+
+		close(command.fd_file_in);
+		close(command.fd_file_out);
+		close_pipe(command.fd_pipe_out);
+	}
+	else if (command.type == MID)
+	{
+		dup2(command.fd_pipe_in[READ], STDIN_FILENO);
+		dup2(command.fd_pipe_out[WRITE], STDOUT_FILENO);
+
+		close(command.fd_file_in);
+		close(command.fd_file_out);
+		close_pipe(command.fd_pipe_in);
+		close_pipe(command.fd_pipe_out);
+	}
+
+	else
+	{
+		dup2(command.fd_pipe_in[READ], STDIN_FILENO);
+		dup2(command.fd_file_out, STDOUT_FILENO);
+
+		close(command.fd_file_in);
+		close(command.fd_file_out);
+		close_pipe(command.fd_pipe_in);
+	}
+
+	if (command_absolute && access(command_absolute, F_OK | X_OK) == 0)
+		execve(command_absolute, command_split, command.envp);
+
+	perror(command_absolute);
+
+	if (!command_absolute || access(command_absolute, F_OK) != 0)
+		return_code = 127;
+	else if (access(command_absolute, X_OK) != 0)
+		return_code = 126;
+	else
+		return_code = 1;
+
+	free_split(command_split);
+	if (command_absolute)
+		free(command_absolute);
+	free(path.home);
+	free(path.pwd);
+	free_split(path.path);
+	return (return_code);
+}
+
+void	init_pipex(t_pipex *pipex, int argc, char **argv, char **envp)
+{
+	if (argc < 5)
+	{
+		write(2, "Usage error.\nExpected: ./pipex <file_in> <cmd1> ... <cmdn> <file_out>\n", 70);
+		exit(1);
+	}
+	pipex->command.fd_file_in = open(argv[1], O_RDONLY);
+	if (pipex->command.fd_file_in < 0)
+		perror("Invalid input file");
+	pipex->command.fd_file_out = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (pipex->command.fd_file_out < 0)
+		perror("Invalid output file");
+	pipex->path = get_path_variables(envp);
+	pipex->command_iter = 3;
+	pipex->command.envp = envp;
+	pipex->pid = malloc(sizeof(int) * (argc - 3));
+}
+
+int	exec_child(t_pipex pipex, char *cmd, int type)
+{
+	free(pipex.pid);
+	pipex.command.command = cmd;
+	pipex.command.type = type;
+	return (exec_proc(pipex.command, pipex.path));
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	t_pipex		pipex;
+
+	// if (argc < 5)
+	// {
+	// 	write(2, "Usage error.\nExpected: ./pipex <file_in> <cmd1> ... <cmdn> <file_out>\n", 70);
+	// 	return (1);
+	// }
+	// command.fd_file_in = open(argv[1], O_RDONLY);
+	// if (command.fd_file_in < 0)
+	// 	perror("Invalid input file");
+	// command.fd_file_out = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	// if (command.fd_file_out < 0)
+	// 	perror("Invalid output file");
+	// path = get_path_variables(envp);
+	// command_iter = 3;
+	// command.envp = envp;
+	// pid = malloc(sizeof(int) * (argc - 3));
+
+	init_pipex(&pipex, argc, argv, envp);
+
+	// First cmd
+
+	pipe(pipex.command.fd_pipe_out);
+	pipex.pid[0] = fork();
+	if (pipex.pid[0] == 0)
+	{
+		// free(pid);
+		// command.command = argv[2];
+		// command.type = FIRST;
+		// return (exec_proc(command, path));
+		return (exec_child(pipex, argv[2], FIRST));
+	}
+
+	// Mid cmd
+
+	while (pipex.command_iter < argc - 2)
+	{
+		if (pipex.command_iter > 3)
+			close_pipe(pipex.command.fd_pipe_in);
+		ft_memcpy(pipex.command.fd_pipe_in, pipex.command.fd_pipe_out, sizeof(int) * 2);
+		// cpy_pipe(pipex.command.fd_pipe_in, pipex.command.fd_pipe_out);
+		pipe(pipex.command.fd_pipe_out);
+		pipex.pid[pipex.command_iter - 2] = fork();
+		if (pipex.pid[pipex.command_iter - 2] == 0)
+		{
+			// free(pipex.pid);
+			// pipex.command.command = argv[pipex.command_iter];
+			// return (exec_proc(pipex.command, pipex.path));
+			return (exec_child(pipex, argv[pipex.command_iter], MID));
+		}
+		pipex.command_iter++;
+	}
+
+	//Last cmd
+
+	if (argc - 3 > 2)
+		close_pipe(pipex.command.fd_pipe_in);
+	ft_memcpy(pipex.command.fd_pipe_in, pipex.command.fd_pipe_out, sizeof(int) * 2);
+	// cpy_pipe(&pipex.command.fd_pipe_in, pipex.command.fd_pipe_out);
+	pipex.pid[pipex.command_iter - 2] = fork();
+	if (pipex.pid[pipex.command_iter - 2] == 0)
+	{
+		// free(pipex.pid);
+		// pipex.command.command = argv[pipex.command_iter];
+		// return (exec_proc(pipex.command, pipex.path));
+		return (exec_child(pipex, argv[pipex.command_iter], LAST));
+	}
+
+	// Wait cmd's
+	close_pipe(pipex.command.fd_pipe_in);
+	close(pipex.command.fd_file_in);
+	close(pipex.command.fd_file_out);
+	pipex.command_iter = 0;
+	while (pipex.command_iter < (argc - 3))
+	{
+		waitpid(pipex.pid[pipex.command_iter], &pipex.return_code, 0);
+		pipex.command_iter++;
+	}
+	free(pipex.pid);
+	free(pipex.path.home);
+	free(pipex.path.pwd);
+	free_split(pipex.path.path);
+	return ((pipex.return_code >> 8) & 0xFF);
 }
