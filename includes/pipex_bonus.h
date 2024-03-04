@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 13:41:35 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/03/04 10:02:12 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/03/04 10:48:44 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	close_wait_free(t_pipex *pipex);
 void	exec_first(t_pipex *pipex, char *cmd);
 int		exec_child(t_pipex pipex, char *cmd, int type);
 void	exec_last(t_pipex *pipex, char *cmd);
-void	exec_mid(t_pipex *pipex, char *cmd);
+void	exec_mid(t_pipex *pipex, char **cmd);
 char	*join_paths(char *absolute, char *relative);
 int		exec_process(t_command command, t_path path);
 t_path	get_path_variables(char **envp);

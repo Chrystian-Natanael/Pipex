@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 19:15:35 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/03/01 20:34:18 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/03/04 10:49:12 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	exec_first(t_pipex *pipex, char *cmd)
 		exit(exec_child(*pipex, cmd, FIRST));
 }
 
-void	exec_mid(t_pipex *pipex, char *cmd)
+void	exec_mid(t_pipex *pipex, char **cmd)
 {
 	while (pipex->command_iter < pipex->argc - 2)
 	{
@@ -30,7 +30,7 @@ void	exec_mid(t_pipex *pipex, char *cmd)
 		pipe(pipex->command.fd_pipe_out);
 		pipex->pid[pipex->command_iter - 2] = fork();
 		if (pipex->pid[pipex->command_iter - 2] == 0)
-			exit(exec_child(*pipex, cmd, MID));
+			exit(exec_child(*pipex, cmd[pipex->command_iter], MID));
 		pipex->command_iter++;
 	}
 }

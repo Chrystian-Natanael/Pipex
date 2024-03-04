@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 12:56:26 by danbarbo          #+#    #+#             */
-/*   Updated: 2024/03/04 10:00:31 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/03/04 10:48:32 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int	main(int argc, char **argv, char **envp)
 
 	init_pipex(&pipex, argc, argv, envp);
 	exec_first(&pipex, argv[2]);
-	exec_mid(&pipex, argv[pipex.command_iter]);
+	exec_mid(&pipex, argv);
 	exec_last(&pipex, argv[pipex.command_iter]);
 	close_wait_free(&pipex);
 	return ((pipex.return_code >> 8) & 0xFF);
