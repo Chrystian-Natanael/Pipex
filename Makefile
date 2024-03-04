@@ -40,6 +40,7 @@ SRCS_BONUS =	$(addprefix $(SRCS_PATH),\
 				main_bonus.c \
 				exec_bonus.c \
 				path_bonus.c \
+				dup_bonus.c \
 				utils_bonus.c)
 
 LIBFT = $(addprefix $(LIBFT_DIR), libft.a)
@@ -107,7 +108,7 @@ endef
 
 define comp_exe
 	$(COMP_EXE)
-	printf "$(GREEN)PIPEX ->$(RESET)$(PURPLE) READY\n$(RESET)"
+	printf "\n$(GREEN)PIPEX ->$(RESET)$(PURPLE) READY\n$(RESET)"
 endef
 
 #! ******************************************************************************#
@@ -134,10 +135,11 @@ clean:
 
 fclean: clean
 	$(RM) $(NAME)
-	# $(RM) $(NAME_BONUS)
-	# $(MAKE) -C $(LIBFT_DIR) fclean
+	$(RM) $(NAME_BONUS)
+	$(MAKE) -C $(LIBFT_DIR) fclean
 
 bonus:
+	printf "$(GREEN)Compiling bonus$(RESET)\n"
 	$(call bonus)
 
 re: fclean all

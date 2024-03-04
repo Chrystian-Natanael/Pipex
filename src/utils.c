@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 10:34:24 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/03/01 19:13:28 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/03/04 07:27:08 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	full_error(char *str1, char *str2, char *str3, unsigned int retrn)
 {
-	ft_putstr_fd("Pipex: ", ERROR);
+	ft_putstr_fd("pipex: ", ERROR);
 	ft_putstr_fd(str1, ERROR);
 	ft_putstr_fd(str2, ERROR);
 	ft_putendl_fd(str3, ERROR);

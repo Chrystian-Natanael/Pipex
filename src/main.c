@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/07 12:32:26 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/03/01 14:26:14 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/03/04 07:26:27 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,17 +21,18 @@ int	execute_command(char *command, char **envp)
 	ret_code = 0;
 	cmd = ft_split(command, ' ');
 	if (cmd == NULL)
-		return (full_error("Split error\n", "", "", 1));
+		return (full_error("split error\n", "", "", 1));
 	path_cmd = get_path_cmd(cmd[0], envp);
 	execve(path_cmd, cmd, envp);
 	if (access(path_cmd, F_OK) != 0)
 	{
-		ft_putstr_fd("Pipex: Command not found: ", ERROR);
-		ft_putendl_fd(cmd[0], ERROR);
+		ft_putstr_fd("pipex: ", ERROR);
+		ft_putstr_fd(cmd[0], ERROR);
+		ft_putendl_fd(": command not found", ERROR);
 		ret_code = 127;
 	}
-	else if (access(path_cmd, X_OK) != 0)
-		ret_code = full_error("Permission denied: ", "", "", 126);
+	else if (access(path_cmd, X_OK | F_OK) != 0)
+		ret_code = full_error("permission denied: ", "", "", 126);
 	free(path_cmd);
 	free_split(cmd);
 	close(0);
@@ -49,7 +50,7 @@ int	child_process(int *fd, char **argv, char **envp)
 	{
 		close(fd[0]);
 		close(fd[1]);
-		return (full_error("File error: ", argv[1], "", 1));
+		return (full_error(argv[1], ": No such file or directory", "", 1));
 	}
 	dup2(file_in, STDIN_FILENO);
 	dup2(fd[1], STDOUT_FILENO);

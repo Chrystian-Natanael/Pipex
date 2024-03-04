@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 13:41:35 by cnatanae          #+#    #+#             */
-/*   Updated: 2024/03/01 19:52:04 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/03/04 10:02:12 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ typedef struct s_pipex
 	int			argc;
 }	t_pipex;
 
-
 char	**split_path(char *str);
 void	close_pipe(int *fd_pipe);
 void	cpy_pipe(void *pipe_in, void *pipe_out);
@@ -96,5 +95,8 @@ int		exec_process(t_command command, t_path path);
 t_path	get_path_variables(char **envp);
 char	*get_from_path(char *cmd, t_path path);
 char	*get_absolute_path(char *cmd, t_path path);
+int		dup_first(t_command *command);
+int		dup_mid(t_command *command);
+int		dup_last(t_command *command);
 
 #endif

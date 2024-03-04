@@ -6,7 +6,7 @@
 /*   By: cnatanae <cnatanae@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 12:56:26 by danbarbo          #+#    #+#             */
-/*   Updated: 2024/03/01 20:48:30 by cnatanae         ###   ########.fr       */
+/*   Updated: 2024/03/04 10:00:31 by cnatanae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,28 +23,15 @@ static int	set_dup2(t_command command)
 	if (command.type == FIRST)
 	{
 		if (command.fd_file_in != -1)
-		{
-			dup2(command.fd_file_in, STDIN_FILENO);
-			dup2(command.fd_pipe_out[WRITE], STDOUT_FILENO);
-			ret_code = 1;
-		}
+			ret_code = dup_first(&command);
 		close_pipe(command.fd_pipe_out);
 	}
 	else if (command.type == MID)
-	{
-		dup2(command.fd_pipe_in[READ], STDIN_FILENO);
-		dup2(command.fd_pipe_out[WRITE], STDOUT_FILENO);
-		close_pipe(command.fd_pipe_in);
-		close_pipe(command.fd_pipe_out);
-	}
+		ret_code = dup_mid(&command);
 	else
 	{
 		if (command.fd_file_out != -1)
-		{
-			dup2(command.fd_file_out, STDOUT_FILENO);
-			dup2(command.fd_pipe_in[READ], STDIN_FILENO);
-			ret_code = 1;
-		}
+			ret_code = dup_last(&command);
 		close_pipe(command.fd_pipe_in);
 	}
 	if (command.fd_file_in != -1)
