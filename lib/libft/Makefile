@@ -7,13 +7,25 @@ NAME := libft.a
 # ! --------------------------------------------------------------------------------------------------------------------------------
 # ! COLORS
 
-GREEN = \033[32m
 YELLOW = \033[33m
-PURPLE = \033[35m
-RED = \033[31m
-WHITE = \033[37m
+DEFAULT=\033[39m
+BLACK=\033[30m
+DARK_RED=\033[31m
+DARK_GREEN=\033[32m
+DARK_YELLOW=\033[33m
+DARK_BLUE=\033[34m
+DARK_MAGENTA=\033[35m
+DARK_CYAN=\033[36m
+LIGHT_GRAY=\033[37m
+DARK_GRAY=\033[90m
+RED=\033[91m
+GREEN=\033[92m
+ORANGE=\033[93m
+BLUE=\033[94m
+MAGENTA=\033[95m
+CYAN=\033[96m
+WHITE=\033[97m
 FCOLOR = \033[0m
-
 # ! --------------------------------------------------------------------------------------------------------------------------------
 # ! PATH
 
@@ -111,7 +123,6 @@ COUNT_PRINTF ?= 0
 
 all: $(PATHOBJ) $(NAME)
 	@sleep 0.01
-	@printf "\n$(GREEN)COMPILED:$(FCOLOR)$(PURPLE) $(NAME)$(FCOLOR)\n"
 
 $(PATHOBJ):
 	@$(MKDIR) $@
@@ -121,6 +132,7 @@ $(PATHOBJ)/%.o: $(PATHSRC_LIB)/%.c
 	@$(CC) $(CFLAGS) -I$(PATCHINLCUDE) -c $< -o $@
 	@printf "Compiling $(YELLOW)LIBFT %d%%\r$(FCOLOR)" $$(echo $$(($(COUNT_LIB) * 100 / $(words $(SRCS_LIB)))))
 	@if [ $(COUNT_LIB) -eq $(words $(SRCS_LIB)) ]; then \
+		printf "Compiled $(DARK_GREEN)LIBFT  100%%$(FCOLOR) ✅"; \
 		printf "\n"; \
 	fi
 
@@ -129,6 +141,7 @@ $(PATHOBJ)/%.o: $(PATHSRC_GNL)/%.c
 	@$(CC) $(CFLAGS) -I$(PATCHINLCUDE) -c $< -o $@
 	@printf "Compiling $(YELLOW)GNL %d%%\r$(FCOLOR)" $$(echo $$(($(COUNT_GNL) * 100 / $(words $(SRCS_GNL)))))
 	@if [ $(COUNT_GNL) -eq $(words $(SRCS_GNL)) ]; then \
+		printf "Compiled $(DARK_GREEN)GNL    100%%$(FCOLOR) ✅"; \
 		printf "\n"; \
 	fi
 
@@ -136,10 +149,14 @@ $(PATHOBJ)/%.o: $(PATHSRC_PRINTF)/%.c
 	@$(eval COUNT_PRINTF=$(shell expr $(COUNT_PRINTF) + 1))
 	@$(CC) $(CFLAGS) -I$(PATCHINLCUDE) -c $< -o $@
 	@printf "Compiling $(YELLOW)PRINTF %d%%\r$(FCOLOR)" $$(echo $$(($(COUNT_PRINTF) * 100 / $(words $(SRCS_PRINTF)))))
+	@if [ $(COUNT_PRINTF) -eq $(words $(SRCS_PRINTF)) ]; then \
+		printf "Compiled $(DARK_GREEN)PRINTF 100%%$(FCOLOR) ✅"; \
+	fi
 
 $(NAME): $(OBJS_LIB) $(OBJS_GNL) $(OBJS_PRINTF)
 	@$(AR) $@ $(OBJS_LIB) $(OBJS_GNL) $(OBJS_PRINTF)
 	@sleep 0.01
+	@printf "\n\n🌟 $(DARK_BLUE)$(NAME)$(FCOLOR) is Ready 🌟\n"
 
 clean:
 	@$(RM) $(PATHOBJ)
